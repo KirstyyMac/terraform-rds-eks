@@ -24,3 +24,8 @@ variable "rds_vpc_id" {
     type = string
     description = "VPC ID for the RDS VPC"
 }
+
+variable "eks_apps_role_arn" {
+    type = string
+    description = "Role ARN used by EKS applications to access RDS"
+}
