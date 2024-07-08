@@ -1,7 +1,7 @@
 ### Terraform RDS
-This repository will create an RDS that's deploying into an EKS cluster on AWS using terraform. 
+This repository will create an RDS that's is ot be used by apps in an EKS cluster on AWS using terraform. 
 
-Run `terraform plan --var-file ./vars/prod.tfvars` to see stack
+Run `terraform plan --var-file ./vars/prod.tfvars` to see planned stack
 
 ## Assumptions
 VPCs (same network)

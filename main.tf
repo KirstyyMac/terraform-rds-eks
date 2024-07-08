@@ -1,4 +1,3 @@
-## RDS instance
 provider "aws" {
     region = var.region
 
@@ -14,10 +13,11 @@ provider "aws" {
 resource "aws_db_instance" "eks_rds" {
   allocated_storage = 100
   backup_retention_period = 30
-  db_name = "eks-db"
+  db_name = "eks-app-db"
   engine = "aurora-postgresql"
   engine_version = "16.1"
-  instance_class = "db.t3.micro"
+  ## Would obviously need to review instance class based on app usage patterns 
+  instance_class = "db.t4g.large"
   manage_master_user_password = true
   username = "application"
   parameter_group_name = "rds-eks-pg"
@@ -27,13 +27,12 @@ resource "aws_db_instance" "eks_rds" {
   iam_database_authentication_enabled = true
 }
 
-## subnet group - ideally would reference subnet ids directly from VPC terraform stack 
+## subnet group - ideally would reference subnet ids directly from VPC terraform stack instead of from vars
 resource "aws_db_subnet_group" "eks_rds_subnet_group" {
   name  = "eks-db-subnet-group"
   subnet_ids = var.rds_vpc_subnets
 }
 
-## security group
 resource "aws_security_group" "eks_rds_sg" {
   name_prefix = "eks-rds-sg-${var.environment}"
   description = "Default security group for EKS PostgreSQL database instance allowing access from private network."
@@ -51,11 +50,9 @@ resource "aws_vpc_security_group_ingress_rule" "eks_rds_ingress_application" {
 resource "aws_vpc_security_group_egress_rule" "rds_eks_egress" {
   security_group_id = aws_security_group.eks_rds_sg.id
   cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1" # semantically equivalent to all ports
+  ip_protocol       = "-1" 
 }
 
-
-## RDS custom paramter group
 resource "aws_db_parameter_group" "eks_rds_pg" {
   name   = "eks-rds-pg"
   family = "aurora-postgresql16"
